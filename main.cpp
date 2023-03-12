@@ -62,6 +62,7 @@ public:
                 cout << temp << " / ";
             }
             cout << endl;
+            cout << endl;
         }
     }
 
