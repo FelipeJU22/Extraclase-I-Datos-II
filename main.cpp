@@ -5,250 +5,237 @@ class Nodo
 {
 public:
     int dato;
-    Nodo *puntero;
     Nodo *siguiente;
     Nodo(){
-
+        dato = 0;
+        siguiente = nullptr;
     }
     Nodo(int dato)
     {
         this->dato = dato;
         this->siguiente = NULL;
-        this->puntero = NULL;
     }
     Nodo(int dato, Nodo *signodo)
     {
         this->dato = dato;
         this->siguiente = signodo;
-        this->puntero = NULL;
-    }
-    Nodo(Nodo *puntero){
-        this->dato = 0;
-        this->siguiente = NULL;
-        this->puntero = puntero;
-    }
-    Nodo(Nodo *puntero, Nodo *signodo){
-        this->dato = 0;
-        this->siguiente = signodo;
-        this->puntero = puntero;
     }
 
+    void setDato(int x);
+    void setSiguiente(Nodo* x);
+    friend class Collector;
 };
+void Nodo::setDato(int x){
+    dato = x;
+}
+void Nodo::setSiguiente(Nodo* x){
+    siguiente = x;
+}
 
-//////////////////////////
+
+
+//-----------------------------------------------------------------------------
 
 class Collector {
 public:
     Nodo *head;
 
-    /**bool ListaVacia() {
-        cout << " entro a lista ";
-        cout << " AAAAAAAAAAAAAAA ";
-        return head == nullptr;
-    }*/
-
-
-    void InsertarInicio(int puntero) {
-        cout <<puntero<<endl;
-        cout << "entro a insertar" << endl;
-        if (this->head == NULL) {
-            cout << "entro al if" << endl;
-            this->head = new Nodo(puntero);
+    void InsertarInicioC(Nodo *puntero) {
+        if (head == nullptr) {
+            head = puntero;
+            //head->setDato(0);
+            head->siguiente = nullptr;
         } else {
-            cout << "entro al else" << endl;
-            this->head = new Nodo(puntero, head);
+            puntero->setSiguiente(head);
+            head = puntero;
+            head->setDato(0);
         }
     }
-
 
     void Mostrar() {
-        Nodo *aux;
-        if (head == NULL)
-            cout << "No hay elementos AQUI";
+        cout << "Se elimina ----> " << head <<endl;
+        if (head == nullptr)
+            cout << "No hay elementos en collector";
         else {
-            aux = head;
-            while (aux) {
-                cout << aux->puntero << "-> ";
-                aux = aux->siguiente;
+            cout<< "Collector:   ";
+            for (Nodo *temp = head; temp != nullptr; temp = temp->siguiente) {
+                cout << temp << " / ";
             }
             cout << endl;
         }
     }
-};
 
-
-
-//////////////////////////
-
-
-
-
-
-
-class Lista {
-Collector* botadero;
-private:
-    void agregarRecursivo(Nodo *n, int dato) {
-        if (n->siguiente == NULL) {
-            n->siguiente = new Nodo(dato);
-        } else {
-            this->agregarRecursivo(n->siguiente, dato);
-        }
-    }
-    void agregarInicioRecursivo(Nodo *n, int dato) {
-        if (n->siguiente == NULL) {
-            this->cabeza = new Nodo(dato);
-        } else {
-            this->cabeza = new Nodo(dato, this->cabeza);
-        }
-    }
-    void imprimirRecursivo(Nodo *n) {
-        if (n != NULL) {
-            int *datoPtr;
-            datoPtr = &n->dato;
-            cout << n->dato << std::endl;
-            cout << datoPtr << std::endl;
-            this->imprimirRecursivo(n->siguiente);
-        }
-    }
-
-    void eliminarRecursivo(Nodo *n, int dato) {
-        if (n == NULL) {
-            return;
-        }
-        if (n->dato == dato && n == this->cabeza) {
-            Nodo *temporal = this->cabeza;
-
-            cout << temporal<< endl;
-            if (this->cabeza->siguiente != NULL) {
-                this->cabeza = this->cabeza->siguiente;
-                //cout << "ENTRO LINEA 57";
-                //botadero->agregarC(temporal);
-                delete temporal;
-            } else {
-                //cout << "ENTRO LINEA 61";
-                this->cabeza = NULL;
-            }
-            return;
-        }
-        if (n->siguiente != NULL && n->siguiente->dato == dato) {
-            Nodo *temporal = n->siguiente;
-            Nodo *temp = temporal;
-            cout << temporal << endl;
-            if (n->siguiente != NULL) {
-                //cout << "ENTRO LINEA 69" << endl;
-                n->siguiente = n->siguiente->siguiente;
-            }
-            botadero->InsertarInicio(5);
-            delete temporal;
-        } else {
-            //cout << "ENTRO LINEA 74"<< endl;
-            this->eliminarRecursivo(n->siguiente, dato);
-        }
-    }
-
-    bool existeRecursivo(Nodo *n, int dato) {
-        if (n == NULL) {
+    bool HayEspacios() {
+        if (this->head == nullptr) {
             return false;
-        }
-        if (n->dato == dato) {
+        } else {
             return true;
         }
-        return this->existeRecursivo(n->siguiente, dato);
     }
 
+    Nodo *EliminarDeColl() {
+        if (this->head->siguiente == nullptr) {
+            Nodo *tmp = head;
+            head = nullptr;
+
+            return tmp;
+        } else {
+            Nodo *tmp = head;
+            head = head->siguiente;
+            return tmp;
+        }
+    };
+};
+
+
+//-----------------------------------------------------------------------------
+
+class Lista {
 public:
     Nodo *cabeza;
-    Nodo *aux;
+    int tamaño;
+    Collector *botadero;
 
-    void eliminar(int dato) {
-
-        this->eliminarRecursivo(this->cabeza, dato);
+    Lista() {
+        cabeza = nullptr;
+        tamaño = 0;
+        botadero = new Collector();
     }
 
-    void agregar(int dato) {
-        cout << "cabeza de la lista simple:  "<< cabeza <<endl;
-        if (this->cabeza == NULL) {
-
-            this->cabeza = new Nodo(dato);
+    void InsertarFinal(int data) {
+        if (botadero->HayEspacios() != false) {
+            Nodo *newPtr = botadero->EliminarDeColl();
+            if (cabeza == nullptr) {
+                cabeza = newPtr;
+                cabeza->setDato(data);
+                cabeza->setSiguiente(nullptr);
+                tamaño++;
+            } else {
+                Nodo *temp = cabeza;
+                while (temp->siguiente != nullptr) {
+                    temp = temp->siguiente;
+                }
+                temp->setSiguiente(newPtr);
+                newPtr->setSiguiente(nullptr);
+                newPtr->setDato(data);
+                tamaño++;
+            }
         } else {
-            this->agregarRecursivo(this->cabeza, dato);
+            Nodo *newPtr = new Nodo(data);
+            if (cabeza == nullptr) {
+                cabeza = newPtr;
+                tamaño++;
+            } else {
+                Nodo *temp = cabeza;
+                while (temp->siguiente != nullptr) {
+                    temp = temp->siguiente;
+                }
+                temp->setSiguiente(newPtr);
+                tamaño++;
+            }
         }
     }
 
-    void agregarI(int dato)
-    {
-        agregarInicioRecursivo( this->cabeza, dato);
+    void InsertarInicio(int data) {
+
+        if (botadero->HayEspacios() != false) {
+            Nodo *newPtr = botadero->EliminarDeColl();
+
+            if (cabeza == nullptr) {
+                cabeza = newPtr;
+                cabeza->setDato(data);
+                cabeza->setSiguiente(nullptr);
+                tamaño++;
+
+            } else {
+                newPtr->setSiguiente(cabeza);
+                cabeza = newPtr;
+                cabeza->setDato(data);
+                tamaño++;
+
+            }
+        } else {
+            if (cabeza == nullptr) {
+                Nodo *newPtr = new Nodo(data);
+                cabeza = newPtr;
+                tamaño++;
+            } else {
+                Nodo *newPtr = new Nodo(data, cabeza);
+                cabeza = newPtr;
+                tamaño++;
+            }
+        }
+
     }
-    void imprimir()
-    {
-        //cout << "Imprimiendo " << endl;
-        //this->imprimirRecursivo(this->cabeza);
-        if( this->cabeza == NULL)
-            cout << "No hay elementos AQUI";
-        else{
-            aux = this->cabeza;
-            int *datoPtr;
-            while(aux){
-                datoPtr = &aux ->dato;
-                cout << aux->dato << "-> ";
-                //cout << datoPtr << "-> " << endl;
-                aux = aux->siguiente;
+
+    void EliminarDato(int data) {
+        if (data == cabeza->dato) {
+            Nodo *temp = cabeza;
+            cabeza = cabeza->siguiente;
+            botadero->InsertarInicioC(temp);
+            botadero->Mostrar();
+            tamaño--;
+
+
+        } else {
+            Nodo *buscador = cabeza;
+            Nodo *prev;
+            while (buscador->dato != data) {
+                prev = buscador;
+                buscador = buscador->siguiente;
+            }
+
+            prev->siguiente = buscador->siguiente; // prev->nextPtr = prev->nextPtr->nextPtr;
+            botadero->InsertarInicioC(buscador);
+            botadero->Mostrar();
+            tamaño--;
+        }
+
+    }
+
+    void MostrarLista() {
+        Nodo *temp;
+        if (cabeza == nullptr) {
+            cout << "No hay elementos en al lista " << endl;
+        } else {
+            temp = cabeza;
+            cout << "Lista :   " << endl;
+            while (temp) {
+                cout <<  temp->dato << " -> " <<temp << endl;
+                temp = temp->siguiente;
             }
             cout << endl;
         }
     }
-    bool existe(int dato)
-    {
-        return this->existeRecursivo(this->cabeza, dato);
-    }
 };
 
+//-----------------------------------------------------------------------------
 
-
-
-/////////////////////////////////
-
-
-
-
-
-
-
-
-int main()
-{
+int main(){
     Lista *l = new Lista();
     Collector *C = new Collector();
-    //C->getHead();
-    Nodo *N = new Nodo(N);
-    Nodo *M = new Nodo(M, N);
-    l->agregar(1);
-    l->imprimir();
-    l->agregar(2);
-    l->imprimir();
-    l->agregarI(3);
-    l->imprimir();
-    l->agregar(4);
-    l->agregar(5);
-    l->imprimir();
+    l->InsertarInicio(1);
+    l->InsertarFinal(2);
+    l->InsertarInicio(3);
+    l->InsertarFinal(4);
+    l->InsertarFinal(5);
 
-    l->eliminar(4);
-    l->imprimir();
-    //l->eliminar(1);
-    //l->agregar(3);
-    //l->eliminar(1);
-    //l->eliminar(2);
-    //l->eliminar(3);
-    //l->eliminar(4);
-    //l->eliminar(5);
+    l->MostrarLista();
 
-    //C->agregarC(M);
-    C->Mostrar();
 
-    int pepe = 5;
-    int *PepePtr = &pepe;
-    C->InsertarInicio(*PepePtr);
+    l->EliminarDato(4);
+    l->MostrarLista();
 
+    l->EliminarDato(5);
+    l->MostrarLista();
+
+
+    l->InsertarInicio(70);
+    l->MostrarLista();
+    l->EliminarDato(1);
+    l->EliminarDato(3);
+
+    l->InsertarFinal(48);
+    l->MostrarLista();
 
 }
