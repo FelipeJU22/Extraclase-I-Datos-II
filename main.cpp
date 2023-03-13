@@ -1,6 +1,9 @@
 #include <iostream>
 using namespace std;
 
+/**
+ * Clase utilizada para la reservación de datos enteros
+ */
 class Nodo
 {
 public:
@@ -10,18 +13,34 @@ public:
         dato = 0;
         siguiente = nullptr;
     }
+    /**
+     * Método constructor para nodos enteros
+     * @param dato
+     */
     Nodo(int dato)
     {
         this->dato = dato;
         this->siguiente = NULL;
     }
+    /**
+     * Método constructor para nodos y puntero hacia el siguiente nodo
+     * @param dato
+     * @param signodo
+     */
     Nodo(int dato, Nodo *signodo)
     {
         this->dato = dato;
         this->siguiente = signodo;
     }
-
+    /**
+     * setear del dato entero
+     * @param x
+     */
     void setDato(int x);
+    /**
+     * Setear el siguiente valor
+     * @param x
+     */
     void setSiguiente(Nodo* x);
     friend class Collector;
 };
@@ -35,11 +54,17 @@ void Nodo::setSiguiente(Nodo* x){
 
 
 //-----------------------------------------------------------------------------
-
+/**
+ * Clase collector, encargada de recolectar punteros de los datos eliminados
+ */
 class Collector {
 public:
     Nodo *head;
 
+    /**
+     * Insertar al inicio de collector
+     * @param puntero
+     */
     void InsertarInicioC(Nodo *puntero) {
         if (head == nullptr) {
             head = puntero;
@@ -51,7 +76,9 @@ public:
             head->setDato(0);
         }
     }
-
+    /**
+     * Mostrar collector
+     */
     void Mostrar() {
         cout << "Se elimina ----> " << head <<endl;
         if (head == nullptr)
@@ -65,7 +92,10 @@ public:
             cout << endl;
         }
     }
-
+    /**
+     * Función para verificar si hay algo en collector
+     * @return
+     */
     bool HayEspacios() {
         if (this->head == nullptr) {
             return false;
@@ -73,7 +103,10 @@ public:
             return true;
         }
     }
-
+    /**
+     * Función para eliminar de collector
+     * @return
+     */
     Nodo *EliminarDeColl() {
         if (this->head->siguiente == nullptr) {
             Nodo *tmp = head;
@@ -90,19 +123,26 @@ public:
 
 
 //-----------------------------------------------------------------------------
-
+/**
+ * Clase lista, para almacenar nodos con valores enteros
+ */
 class Lista {
 public:
     Nodo *cabeza;
     int tamaño;
     Collector *botadero;
-
+    /**
+     * Atributos de la lista simple enlazada
+     */
     Lista() {
         cabeza = nullptr;
         tamaño = 0;
         botadero = new Collector();
     }
-
+    /**
+     * Función para insertar al final de la lista
+     * @param data
+     */
     void InsertarFinal(int data) {
         if (botadero->HayEspacios() != false) {
             Nodo *newPtr = botadero->EliminarDeColl();
@@ -136,7 +176,10 @@ public:
             }
         }
     }
-
+    /**
+     * Función para insertar al inicio de la lista enlazada
+     * @param data
+     */
     void InsertarInicio(int data) {
 
         if (botadero->HayEspacios() != false) {
@@ -168,7 +211,10 @@ public:
         }
 
     }
-
+    /**
+     * Función para eliminar dato de la lista enlazada
+     * @param data
+     */
     void EliminarDato(int data) {
         if (data == cabeza->dato) {
             Nodo *temp = cabeza;
@@ -193,7 +239,9 @@ public:
         }
 
     }
-
+    /**
+     * Función para mostrar la lista enlazada actual
+     */
     void MostrarLista() {
         Nodo *temp;
         if (cabeza == nullptr) {
@@ -212,6 +260,10 @@ public:
 
 //-----------------------------------------------------------------------------
 
+/**
+ * Función main
+ * @return
+ */
 int main(){
     Lista *l = new Lista();
     Collector *C = new Collector();
@@ -238,5 +290,4 @@ int main(){
 
     l->InsertarFinal(48);
     l->MostrarLista();
-
 }
